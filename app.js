@@ -7,74 +7,33 @@
   class AppComponent {
     constructor() {
       this.versionData = {
-        name: 'Solaris Core v3.2',
-        startDate: new Date('2024-03-01'),
-        endDate: new Date('2024-04-15'),
-        totalDays: 45,
-        daysLeft: 14,
-        progress: 68,
+        name: 'Loading...',
+        startDate: new Date(),
+        endDate: new Date(),
+        totalDays: 0,
+        daysLeft: 0,
+        progress: 0,
+        milestones: [],
+        branches: [],
       };
 
-      this.drops = [
-        { id: 1, name: 'Alpha Drop', date: 'Mar 10', status: 'completed' },
-        { id: 2, name: 'Beta Release', date: 'Mar 28', status: 'current' },
-        { id: 3, name: 'Final Polish', date: 'Apr 12', status: 'upcoming' },
-      ];
-
-      this.teams = [
-        {
-          name: 'Platform Engineering',
-          iconColor: '#facc15',
-          features: [
-            'Kubernetes Cluster Migration',
-            'Auto-scaling Engine Optimization',
-            'New Monitoring Dashboard',
-          ],
-          borderColor: '#facc15',
-        },
-        {
-          name: 'Product Experience',
-          iconColor: '#a855f7',
-          features: [
-            'Interactive Data Visualizations',
-            'Mobile App Redesign (v2)',
-            'Accessibility Compliance Audit',
-          ],
-          borderColor: '#a855f7',
-        },
-        {
-          name: 'Security & Growth',
-          iconColor: '#60a5fa',
-          features: [
-            'Biometric Authentication Flow',
-            'Multi-region Failover Test',
-            'Referral Program Launch',
-          ],
-          borderColor: '#60a5fa',
-        },
-      ];
-
+      this.drops = [];
+      this.teams = [];
       this.birthdays = [
-        {
-          name: 'Noa Levy',
-          date: 'March 24th',
-          daysAway: 2,
-          image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop',
-        },
-        {
-          name: 'Itay Cohen',
-          date: 'April 2nd',
-          daysAway: 11,
-          image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
-        },
+        { name: '', date: '', daysAway: '', image: '' },
+        { name: '', date: '', daysAway: '', image: '' },
       ];
 
       this.activeSlide = 0;
     }
 
     ngOnInit() {
+      this.loadConfig();
+
       this.timer = setInterval(() => {
-        this.activeSlide = (this.activeSlide + 1) % this.teams.length;
+        if (this.teams.length > 0) {
+          this.activeSlide = (this.activeSlide + 1) % this.teams.length;
+        }
       }, 10000);
     }
 
@@ -87,6 +46,38 @@
     selectSlide(index) {
       this.activeSlide = index;
     }
+
+    async loadConfig() {
+      try {
+        const response = await fetch('config.json', { cache: 'no-cache' });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.versionData) {
+          this.versionData = {
+            ...data.versionData,
+            startDate: new Date(data.versionData.startDate),
+            endDate: new Date(data.versionData.endDate),
+            milestones: Array.isArray(data.versionData.milestones) ? data.versionData.milestones : [],
+            branches: Array.isArray(data.versionData.branches) ? data.versionData.branches : [],
+          };
+        }
+
+        this.drops = Array.isArray(data.drops) ? data.drops : [];
+        this.teams = Array.isArray(data.teams) ? data.teams : [];
+
+        if (Array.isArray(data.birthdays) && data.birthdays.length >= 2) {
+          this.birthdays = data.birthdays;
+        }
+
+        this.activeSlide = 0;
+      } catch (error) {
+        console.error('Failed to load configuration', error);
+      }
+    }
   }
 
   AppComponent.annotations = [
@@ -98,22 +89,41 @@
             <div class="header-title">
               <div class="label">Current Version</div>
               <h1>{{ versionData.name }}</h1>
+              <div class="branches" *ngIf="versionData.branches?.length">
+                <div *ngFor="let branch of versionData.branches" class="branch-row">
+                  <div class="branch-title">
+                    {{ branch.title }}
+                    <span class="branch-name">(Branch: {{ branch.branch }})</span>
+                  </div>
+                  <div class="branch-products">{{ branch.products }}</div>
+                </div>
+              </div>
               <div class="divider" aria-hidden="true"></div>
             </div>
 
-            <div class="progress">
-              <div class="progress-info">
-                <span>Release Progress</span>
-                <span style="color: var(--blue); font-weight: 800;">{{ versionData.progress }}%</span>
+              <div class="progress">
+                <div class="progress-info">
+                  <span>Release Progress</span>
+                  <span style="color: var(--blue); font-weight: 800;">{{ versionData.progress }}%</span>
+                </div>
+                <div class="progress-bar" aria-label="Release progress">
+                  <div class="progress-fill" [style.width.%]="versionData.progress"></div>
+                </div>
               </div>
-              <div class="progress-bar" aria-label="Release progress">
-                <div class="progress-fill" [style.width.%]="versionData.progress"></div>
-              </div>
-            </div>
 
-            <div class="countdown">
-              <span class="icon-circle" aria-hidden="true">${clockIcon()}</span>
-              <div>
+              <div class="milestones" *ngIf="versionData.milestones?.length">
+                <div class="milestone-title">Key Dates</div>
+                <div class="milestone-list">
+                  <div class="milestone" *ngFor="let milestone of versionData.milestones">
+                    <div class="milestone-name">{{ milestone.name }}</div>
+                    <div class="milestone-date">{{ milestone.date }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="countdown">
+                <span class="icon-circle" aria-hidden="true">${clockIcon()}</span>
+                <div>
                 <div class="number">{{ versionData.daysLeft }} DAYS</div>
                 <div class="sub">Until Shipping</div>
               </div>

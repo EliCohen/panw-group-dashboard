@@ -61,6 +61,38 @@ body {
   color: transparent;
 }
 
+.branches {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.branch-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 12px;
+  background: rgba(12, 12, 18, 0.7);
+  border: 1px solid var(--card-border);
+}
+
+.branch-title {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.branch-name {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.branch-products {
+  font-weight: 700;
+  color: #e5e7eb;
+}
+
 .header-title .label {
   color: var(--muted);
   font-weight: 700;
@@ -75,6 +107,48 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+.milestones {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.milestone-title {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.milestone-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+}
+
+.milestone {
+  padding: 0.6rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  background: rgba(12, 12, 18, 0.7);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.milestone-name {
+  font-weight: 800;
+  color: #e5e7eb;
+}
+
+.milestone-date {
+  font-weight: 700;
+  color: var(--muted);
 }
 
 .progress-info {
