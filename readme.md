@@ -1,4 +1,4 @@
-# PANW GROP Dashboard
+# PANW GROUP Dashboard
 
 A lightweight Angular-in-the-browser dashboard for office release tracking. It mirrors the provided React mock with a roadmap timeline, initiatives carousel, and birthdays panel—all running without a build step by using Angular UMD bundles from a CDN.
 
