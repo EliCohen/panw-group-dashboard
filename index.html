@@ -8,15 +8,82 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/zone.js@0.14.10/dist/zone.umd.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/tslib@2.6.3/tslib.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/rxjs@7.8.1/dist/bundles/rxjs.umd.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@angular/core@17.3.12/bundles/core.umd.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@angular/common@17.3.12/bundles/common.umd.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@angular/platform-browser@17.3.12/bundles/platform-browser.umd.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@angular/compiler@17.3.12/bundles/compiler.umd.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@angular/platform-browser-dynamic@17.3.12/bundles/platform-browser-dynamic.umd.min.js" defer></script>
-  <script src="app.js" defer></script>
+  <script>
+    // Load Angular UMDs with a jsDelivr → unpkg fallback so the app keeps working when CDN calls are blocked.
+    const scriptChain = [
+      {
+        name: 'zone.js',
+        primary: 'https://cdn.jsdelivr.net/npm/zone.js@0.14.10/dist/zone.umd.min.js',
+        fallback: 'https://unpkg.com/zone.js@0.14.10/dist/zone.umd.min.js',
+      },
+      {
+        name: 'tslib',
+        primary: 'https://cdn.jsdelivr.net/npm/tslib@2.6.3/tslib.min.js',
+        fallback: 'https://unpkg.com/tslib@2.6.3/tslib.min.js',
+      },
+      {
+        name: 'rxjs',
+        primary: 'https://cdn.jsdelivr.net/npm/rxjs@7.8.1/dist/bundles/rxjs.umd.min.js',
+        fallback: 'https://unpkg.com/rxjs@7.8.1/dist/bundles/rxjs.umd.min.js',
+      },
+      {
+        name: '@angular/core',
+        primary: 'https://cdn.jsdelivr.net/npm/@angular/core@17.3.12/bundles/core.umd.min.js',
+        fallback: 'https://unpkg.com/@angular/core@17.3.12/bundles/core.umd.min.js',
+      },
+      {
+        name: '@angular/common',
+        primary: 'https://cdn.jsdelivr.net/npm/@angular/common@17.3.12/bundles/common.umd.min.js',
+        fallback: 'https://unpkg.com/@angular/common@17.3.12/bundles/common.umd.min.js',
+      },
+      {
+        name: '@angular/platform-browser',
+        primary: 'https://cdn.jsdelivr.net/npm/@angular/platform-browser@17.3.12/bundles/platform-browser.umd.min.js',
+        fallback: 'https://unpkg.com/@angular/platform-browser@17.3.12/bundles/platform-browser.umd.min.js',
+      },
+      {
+        name: '@angular/compiler',
+        primary: 'https://cdn.jsdelivr.net/npm/@angular/compiler@17.3.12/bundles/compiler.umd.min.js',
+        fallback: 'https://unpkg.com/@angular/compiler@17.3.12/bundles/compiler.umd.min.js',
+      },
+      {
+        name: '@angular/platform-browser-dynamic',
+        primary: 'https://cdn.jsdelivr.net/npm/@angular/platform-browser-dynamic@17.3.12/bundles/platform-browser-dynamic.umd.min.js',
+        fallback: 'https://unpkg.com/@angular/platform-browser-dynamic@17.3.12/bundles/platform-browser-dynamic.umd.min.js',
+      },
+      {
+        name: 'app',
+        primary: 'app.js',
+        fallback: null,
+      },
+    ];
+
+    function loadScript(url) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.defer = false;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    (async () => {
+      for (const entry of scriptChain) {
+        try {
+          await loadScript(entry.primary);
+        } catch (err) {
+          if (entry.fallback) {
+            console.warn(`Primary CDN failed for ${entry.name}; trying fallback`, err);
+            await loadScript(entry.fallback);
+          } else {
+            throw err;
+          }
+        }
+      }
+    })().catch((err) => console.error('Failed to load scripts', err));
+  </script>
 </head>
 <body>
   <app-root>Loading dashboard...</app-root>
